@@ -8,6 +8,8 @@ from datetime import datetime
 
 
 def convert_index_page(env, articles) -> None:
+    if not os.path.isfile("index/base.j2"):
+        return
     template = env.get_template("index/base.j2")
     with open("docs/index.html", mode='w') as f:
         f.write(template.render({'articles': articles}))
@@ -15,13 +17,18 @@ def convert_index_page(env, articles) -> None:
 
 def convert_unique_pages(env, unique_pages) -> None:
     for page in unique_pages:
-        body = convert_pages("content/" + page + ".md")
+        file_name = "content/" + page + ".md"
+        if not os.path.isfile(file_name):
+            continue
+        body = convert_pages(file_name)
         template = env.get_template("about/base.j2")
         with open("docs/" + page + ".html", mode='w') as f:
             f.write(template.render({'body': body}))
 
 
 def cp_static() -> None:
+    if not os.path.exists("./template/static"):
+        return
     shutil.copytree("./template/static", "./docs", dirs_exist_ok=True)
 
 
@@ -29,6 +36,8 @@ def convert_articles() -> list:
     articles_list = glob.glob("./content/articles/*")
     articles = []
     for article in articles_list:
+        if not os.path.isfile("index/base.j2"):
+            continue
         articles.append(convert_pages(article))
     sorted_articles = sorted(articles, key=lambda x: x['date'], reverse=True)
     return sorted_articles
@@ -70,6 +79,8 @@ def output_aricles_pages(env, articles) -> None:
 
 
 def convert_feed(env, articles) -> None:
+    if not os.path.isfile("feed/base.j2"):
+        return
     template = env.get_template("feed/base.j2")
     feed = {}
     feed['updated'] = articles[0]['date']
@@ -88,6 +99,7 @@ if __name__ == "__main__":
     convert_unique_pages(env, unique_pages)
     cp_static()
     articles = convert_articles()
-    output_aricles_pages(env, articles)
+    if articles:
+        output_aricles_pages(env, articles)
     convert_index_page(env, articles)
     convert_feed(env, articles)
