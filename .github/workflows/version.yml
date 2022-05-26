@@ -1,8 +1,8 @@
 name: push-dockerhub
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   docker:
@@ -21,8 +21,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name:
+        run: echo ${{ github.ref }}
+        env:
+          REF: ${{ github.ref }}
+        run: echo "${REF##*/}"
+          TAG: "${REF##*/v}"
+      -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: yoshiken/yoshiken.dev.python:latest
+          tags: yoshiken/yoshiken.dev.python:${TAG}
