@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name:
+        name: add env tag
         run: echo ${{ github.ref }}
         env:
           REF: ${{ github.ref }}
