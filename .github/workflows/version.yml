@@ -26,6 +26,7 @@ jobs:
         env:
           REF: ${{ github.ref }}
           TAG: "${REF##*/v}"
+      - name: release version
         run: echo "${REF##*/v}"
       -
         name: Build and push
