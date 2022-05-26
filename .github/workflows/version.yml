@@ -25,8 +25,8 @@ jobs:
         run: echo ${{ github.ref }}
         env:
           REF: ${{ github.ref }}
-        run: echo "${REF##*/}"
           TAG: "${REF##*/v}"
+        run: echo "${REF##*/v}"
       -
         name: Build and push
         uses: docker/build-push-action@v3
