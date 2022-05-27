@@ -1,4 +1,4 @@
-name: push-dockerhub
+name: push-dockerhub-version
 on:
   push:
     tags:
