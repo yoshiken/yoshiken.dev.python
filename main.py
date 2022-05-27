@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 def convert_index_page(env, articles) -> None:
-    if not os.path.isfile("index/base.j2"):
+    if not os.path.isfile("docs/index.html"):
         return
     template = env.get_template("index/base.j2")
     with open("docs/index.html", mode='w') as f:
@@ -36,7 +36,7 @@ def convert_articles() -> list:
     articles_list = glob.glob("./content/articles/*")
     articles = []
     for article in articles_list:
-        if not os.path.isfile("index/base.j2"):
+        if not os.path.isfile(article):
             continue
         articles.append(convert_pages(article))
     sorted_articles = sorted(articles, key=lambda x: x['date'], reverse=True)
