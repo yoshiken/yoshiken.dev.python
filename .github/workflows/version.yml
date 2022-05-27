@@ -21,16 +21,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: add env tag
-        run: echo ${{ github.ref }}
-        env:
-          REF: ${{ github.ref }}
-          TAG: "${REF##*/v}"
-      - name: release version
-        run: echo "${REF##*/v}"
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            yoshiken/yoshiken.dev.python
+          tags: |
+            type=semver,pattern={{version}}
       -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
-          tags: yoshiken/yoshiken.dev.python:${TAG}
+          tags: ${{ steps.meta.outputs.tags }}
