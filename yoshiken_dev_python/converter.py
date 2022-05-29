@@ -1,4 +1,3 @@
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 import os
 import markdown
 import shutil
@@ -20,7 +19,7 @@ def convert_unique_pages(env, unique_pages) -> None:
         file_name = "content/" + page + ".md"
         if not os.path.isfile(file_name):
             continue
-        body = convert_pages(file_name)
+        body = _convert_pages(file_name)
         template = env.get_template("about/base.j2")
         with open("docs/" + page + ".html", mode='w') as f:
             f.write(template.render({'body': body}))
@@ -38,12 +37,12 @@ def convert_articles() -> list:
     for article in articles_list:
         if not os.path.isfile(article):
             continue
-        articles.append(convert_pages(article))
+        articles.append(_convert_pages(article))
     sorted_articles = sorted(articles, key=lambda x: x['date'], reverse=True)
     return sorted_articles
 
 
-def convert_pages(path) -> dict:
+def _convert_pages(path) -> dict:
     md = markdown.Markdown(extensions=['extra', 'tables', 'fenced_code', 'abbr'])
     tmp_txt = ""
     body = {}
@@ -87,19 +86,3 @@ def convert_feed(env, articles) -> None:
     feed['updated'] = articles[0]['date']
     with open("docs/feed.xml", mode='w') as f:
         f.write(template.render({'articles': articles, 'feed': feed}))
-
-
-if __name__ == "__main__":
-    os.makedirs("docs", exist_ok=True)
-    env = Environment(
-        loader=FileSystemLoader("template"),
-        autoescape=select_autoescape()
-    )
-    unique_pages = ["about", "format"]
-    convert_unique_pages(env, unique_pages)
-    cp_static()
-    articles = convert_articles()
-    if articles:
-        output_aricles_pages(env, articles)
-    convert_index_page(env, articles)
-    convert_feed(env, articles)

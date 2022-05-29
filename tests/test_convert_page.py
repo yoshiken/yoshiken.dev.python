@@ -1,11 +1,11 @@
-import main
+import yoshiken_dev_python.converter as converter
 import pytest
 from datetime import datetime, timedelta, timezone
 from collections.abc import Generator
 
 
 def test_convert_pages(article_path):
-    page = main.convert_pages(article_path)
+    page = converter._convert_pages(article_path)
     assert page['title'] == "吾輩は猫である"
     assert page['date'] == datetime(2020, 1, 1, 0, 0, 0, tzinfo=get_jst())
     assert page['summary'] == "吾輩わがはいは猫である。名前はまだ無い。"
