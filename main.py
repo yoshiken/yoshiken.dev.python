@@ -44,6 +44,7 @@ def convert_articles() -> list:
 
 
 def convert_pages(path) -> dict:
+    md = markdown.Markdown(extensions=['extra', 'tables', 'fenced_code', 'abbr'])
     tmp_txt = ""
     body = {}
     with open(path) as f:
@@ -90,7 +91,6 @@ def convert_feed(env, articles) -> None:
 
 if __name__ == "__main__":
     os.makedirs("docs", exist_ok=True)
-    md = markdown.Markdown(extensions=['extra', 'tables', 'fenced_code', 'abbr'])
     env = Environment(
         loader=FileSystemLoader("template"),
         autoescape=select_autoescape()
