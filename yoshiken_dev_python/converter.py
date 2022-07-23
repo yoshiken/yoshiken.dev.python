@@ -6,33 +6,33 @@ import re
 from datetime import datetime
 
 
-def convert_index_page(env, articles) -> None:
-    if not os.path.isfile("docs/index.html"):
+def convert_index_page(env, args, articles) -> None:
+    if not os.path.isfile(args.output + "/index.html"):
         return
     template = env.get_template("index/base.j2")
-    with open("docs/index.html", mode='w') as f:
+    with open(args.output + "/index.html", mode='w') as f:
         f.write(template.render({'articles': articles}))
 
 
-def convert_unique_pages(env, unique_pages) -> None:
+def convert_unique_pages(env, args, unique_pages) -> None:
     for page in unique_pages:
-        file_name = "content/" + page + ".md"
+        file_name = args.input + "/" + page + ".md"
         if not os.path.isfile(file_name):
             continue
         body = _convert_pages(file_name)
         template = env.get_template("about/base.j2")
-        with open("docs/" + page + ".html", mode='w') as f:
+        with open(args.output + "/" + page + ".html", mode='w') as f:
             f.write(template.render({'body': body}))
 
 
-def cp_static() -> None:
-    if not os.path.exists("./template/static"):
+def cp_static(args) -> None:
+    if not os.path.exists(args.template + "/static"):
         return
-    shutil.copytree("./template/static", "./docs", dirs_exist_ok=True)
+    shutil.copytree(args.template + "/static", args.output, dirs_exist_ok=True)
 
 
-def convert_articles() -> list:
-    articles_list = glob.glob("./content/articles/*")
+def convert_articles(args) -> list:
+    articles_list = glob.glob(args.input + "/articles/*")
     articles = []
     for article in articles_list:
         if not os.path.isfile(article):
@@ -69,8 +69,8 @@ def _convert_pages(path) -> dict:
     return body
 
 
-def output_aricles_pages(env, articles) -> None:
-    output_dir = "docs/articles/"
+def output_aricles_pages(env, args, articles) -> None:
+    output_dir = args.output + "/articles/"
     os.makedirs(output_dir, exist_ok=True)
     template = env.get_template("articles/base.j2")
     for article in articles:
@@ -78,11 +78,11 @@ def output_aricles_pages(env, articles) -> None:
             f.write(template.render({'article': article}))
 
 
-def convert_feed(env, articles) -> None:
+def convert_feed(env, args, articles) -> None:
     if not os.path.isfile("feed/base.j2"):
         return
     template = env.get_template("feed/base.j2")
     feed = {}
     feed['updated'] = articles[0]['date']
-    with open("docs/feed.xml", mode='w') as f:
+    with open(args + "/feed.xml", mode='w') as f:
         f.write(template.render({'articles': articles, 'feed': feed}))
